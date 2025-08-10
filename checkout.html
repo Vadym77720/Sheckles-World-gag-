@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Оформление заказа — Sheckles world</title>
+  <style>
+    :root{--blue-500:#4da0ff;--blue-600:#1c7ef0;--ink:#0a1a2b;--muted:#6a7a8a;--shadow:0 10px 30px rgba(12,58,125,.15)}
+    *{box-sizing:border-box} body{margin:0;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;
+      color:var(--ink);background:linear-gradient(180deg,#f0f7ff,#fff)}
+    .wrap{max-width:760px;margin:0 auto;padding:24px}
+    .card{background:#fff;border:1px solid rgba(28,126,240,.15);border-radius:16px;box-shadow:var(--shadow);padding:18px}
+    h1{font-size:clamp(22px,3.6vw,32px);margin:10px 0}
+    .row{display:flex;gap:16px;flex-wrap:wrap}
+    label{font-weight:700}
+    input,select{width:100%;padding:10px 12px;border:1px solid rgba(28,126,240,.25);border-radius:10px;font-size:16px}
+    .btn{cursor:pointer;border:0;border-radius:12px;padding:12px 16px;font-weight:900}
+    .btn-primary{background:linear-gradient(90deg,var(--blue-600),var(--blue-500));color:#fff;box-shadow:var(--shadow)}
+    .muted{color:var(--muted)}
+    .summary{display:grid;gap:6px;margin-bottom:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Оформление заказа</h1>
+    <div class="card">
+      <div class="summary">
+        <div><b>Пакет:</b> <span id="s-title"></span></div>
+        <div><b>Цена:</b> <span id="s-price"></span></div>
+      </div>
+      <div class="row">
+        <div style="flex:1 1 260px">
+          <label for="nick">Ник в Roblox</label>
+          <input id="nick" placeholder="Например, Vadym77720" />
+        </div>
+        <div style="flex:1 1 260px">
+          <label for="contact">Контакт для связи</label>
+          <input id="contact" placeholder="Telegram @ник или email" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div style="flex:1 1 200px">
+          <label for="pay">Способ оплаты</label>
+          <select id="pay">
+            <option value="telegram">Telegram (рекомендуем)</option>
+            <option value="email">Email</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn btn-primary" id="btn-pay">Оплатить / Отправить заказ</button>
+      </div>
+      <p class="muted" style="margin-top:10px">После отправки мы свяжемся с вами для подтверждения и передачи валюты в игре.</p>
+    </div>
+  </div>
+
+<script>
+const EUR = new Intl.NumberFormat('ru-RU',{style:'currency',currency:'EUR',maximumFractionDigits:2});
+const params = new URLSearchParams(location.search);
+const amount = Number(params.get('amount') || 0);
+const price = Number(params.get('price') || 0);
+const title = params.get('title') || `${amount}T`;
+
+document.getElementById('s-title').textContent = title;
+document.getElementById('s-price').textContent = EUR.format(price);
+
+function buildMessage(nick,contact){
+  return `Заказ: ${title}%0AЦена: ${EUR.format(price)}%0AНик: ${nick}%0AКонтакт: ${contact}`;
+}
+
+document.getElementById('btn-pay').addEventListener('click', ()=>{
+  const nick = document.getElementById('nick').value.trim();
+  const contact = document.getElementById('contact').value.trim();
+  const pay = document.getElementById('pay').value;
+  if(!nick || !contact){ alert('Заполните ник и контакт.'); return; }
+  const text = buildMessage(nick,contact);
+
+  if(pay==='telegram'){
+    // Замените @ВАШ_НИК на ваш реальный ник или ссылку на бота
+    location.href = `https://t.me/ВАШ_НИК?text=${text}`;
+  } else {
+    location.href = `mailto:orders@sheckles.world?subject=Заказ валюты (Roblox Вырасти Сад)&body=${text}`;
+  }
+});
+</script>
+</body>
+</html>
